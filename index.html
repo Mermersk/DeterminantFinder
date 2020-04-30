@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="fengari-web.js" type="text/javascript"></script>
+    <script src="script.lua" type="application/lua" async></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Lua on the web!</title>
+</head>
+<body>
+
+    <h1>Cofactor expansion of a matrix with Lua through JS^?</h1>
+
+    <form onsubmit="handleSubmit()">
+        
+        <input type="number" id = "11"></input> 
+        <input type="number" id = "12"></input>
+        <input type="number" id = "13"></input>
+        <br>
+        <input type="number" id = "21"></input> 
+        <input type="number" id = "22"></input>
+        <input type="number" id = "23"></input>
+        <br>
+        <input type="number" id = "31"></input> 
+        <input type="number" id = "32"></input>
+        <input type="number" id = "33"></input>
+        
+        <input type="button" value="Find Determinant" id="submit-matrix"></input>
+    </form>
+
+</body>
+</html>
