@@ -43,7 +43,14 @@ function (event)
         table.insert(matrix[rowIndex], tonumber(matrixElements[i].value))
     end
 
-    calculateDet3X3(matrix)
+    finalDet = calculateDet3X3(matrix)
+    
+    detOutputElement = createVisualOutput(finalDet)
+
+    formElement = document:getElementsByTagName("form")[0]
+
+    --Neat little function: element.after() - Appends an element after the form Element(in this case)
+    formElement:after(detOutputElement)
     
 end
 )
@@ -163,9 +170,6 @@ function reverseTable(t)
 end
 
 
-
-
-
 --[[
 Accepts only a 2d array with inner nember containing 2 number each, 4 numbers in total
 
@@ -206,6 +210,30 @@ function validateMatrixForm(matrixElements)
     end
 
     return true
+
+end
+
+--[[
+Creates an element to be injected into webpage when determinant has
+been successfully calculated.
+
+input: Number Determinant
+output: HTML Element
+
+--]]
+
+function createVisualOutput(Determinant)
+
+    --Removes the previous-old determinant if it exists from the DOM.
+    local previousElement = document:getElementsByTagName("h2")
+    if (previousElement.length ~= 0.0) then
+        previousElement[0]:remove()
+    end
+
+    local h2 = document:createElement("h2")
+    h2.textContent = "Determinant is: " .. tostring(Determinant)
+
+    return h2
 
 end
 
