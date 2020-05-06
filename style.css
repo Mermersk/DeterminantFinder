@@ -4,14 +4,82 @@
     to { width: 100% }
 }
 
-input {
-    /*width: 50px; */
-    width: 30%;
-    margin-top: 0.3em;
+body {
+    
+    margin-left: auto;
+    margin-right: auto;
+
+    background-color: rgb(43, 54, 88);
+}
+
+h1 {
+    overflow: hidden;
+    max-width: 770px;
+    margin-left: auto;
+    margin-right: auto;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    color: cornsilk;
+    animation: typing;
+    animation-duration: 3s;
+    animation-timing-function: steps(250, end);
+    margin-bottom: 30px;
+}
+
+h2 {
+
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 225px;
+    color: cornsilk;
+}
+
+form {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+    max-width: 1400px;
     
 }
 
-#submit-matrix {
+form input {
+    width: 50px; 
+    margin-top: 0.3em;
+    margin-left: 5px;
+    
+}
+
+#matrixDiv {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#generateMatrix {
+   width: 200px;
+   margin-left: auto;
+   margin-right: auto;
+}
+
+#dimensionsInput {
+    width: 50px;
+}
+
+
+label {
+    color: cornsilk;
+    margin-left: auto;
+    margin-right: auto; 
+   
+}
+
+#matrixControls {
+
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 200px;
+}
+
+#submit-matrix, #randomize, #createMatrixButton {
     width: 125px;
     height: 30px;
     margin-top: 1em;
@@ -22,42 +90,14 @@ input {
     
 }
 
-#submit-matrix:hover {
+#submit-matrix:hover, #randomize:hover, #createMatrixButton:hover {
 
     background-color: rgb(48, 182, 43);
 }
 
-h1 {
-    overflow: hidden;
-    margin: 0 auto;
-    letter-spacing: 0.03em;
-    white-space: nowrap;
-    animation: typing;
-    animation-duration: 3s;
-    animation-timing-function: steps(250, end);
 
-}
 
-h2 {
 
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 225px;
-}
 
-body {
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
 
-    background-color: rgb(184, 193, 221);
-}
-
-form {
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 2em;
-    max-width: 200px;
-    
-}
 

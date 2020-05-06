@@ -9,23 +9,35 @@
 </head>
 <body>
 
-    <h1>Cofactor expansion of a matrix with Lua through JS^?</h1>
+    <h1>Cofactor expansion of a matrix with Lua through JS</h1>
 
-    <form onsubmit="handleSubmit()">
-        
-        <input type="number" id = "11"></input> 
-        <input type="number" id = "12"></input>
-        <input type="number" id = "13"></input>
+    <div id="generateMatrix">
+        <label for="dimensionsInput">Dimensions of matrix: </label>
+        <input id="dimensionsInput" name="dimensionsInput" type="number" min="2" max="25"></input>
+        <button type="button" id="createMatrixButton">Create matrix</button>
+    </div>
+
+    <form>
+        <!--
+        <input type="number"></input> 
+        <input type="number"></input>
+        <input type="number"></input>
         <br>
-        <input type="number" id = "21"></input> 
-        <input type="number" id = "22"></input>
-        <input type="number" id = "23"></input>
+        <input type="number"></input> 
+        <input type="number"></input>
+        <input type="number"></input>
         <br>
-        <input type="number" id = "31"></input> 
-        <input type="number" id = "32"></input>
-        <input type="number" id = "33"></input>
-        
-        <input type="button" value="Find Determinant" id="submit-matrix"></input>
+        <input type="number"></input> 
+        <input type="number"></input>
+        <input type="number"></input>
+
+        -->
+        <div id="matrixDiv"></div>
+
+        <div id="matrixControls">
+            <button hidden id="randomize" type="button">Randomize Values</button>
+            <input hidden type="button" value="Find Determinant" id="submit-matrix"></input>
+        </div>
     </form>
 
 </body>
