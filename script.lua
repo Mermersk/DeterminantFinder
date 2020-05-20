@@ -5,7 +5,6 @@ detFinder.lua -> Contains only the functionality for finding a determinant with 
 
 --]]
 
-
 local js = require "js"
 local window = js.global
 local document = window.document
@@ -32,6 +31,18 @@ local formElement = document:getElementsByTagName("form")[0]
 generateMatrixButton:addEventListener("click", 
 
 function (event)
+
+    --Removing alredy existing matrix, if its there and a new one was requested.
+    local previousMatrix = document:getElementById("matrixDiv")
+    local previousMatrixElemCount = math.floor(previousMatrix.childElementCount)
+
+    while (previousMatrixElemCount > 0) do
+        previousMatrix.lastChild:remove()
+        previousMatrixElemCount = previousMatrixElemCount - 1
+    end
+
+    --print("existing children: " .. math.floor(previousMatrix.childElementCount))
+
 
     print("generate matrix bb")
 
