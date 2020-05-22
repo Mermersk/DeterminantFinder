@@ -76,11 +76,11 @@ findDeterminantButton:addEventListener("click",
 function (event)
     --print("Submitted")
     --print(document:getElementById("11").value)
-    local matrix = {{}, {}, {}}
+    --local matrix = {{}, {}, {}}
+    local matrix = {}
     local matrixElements = document:querySelectorAll(".matrixCell")
-    --print(matrixElements[0].value)
-
-    local rowIndex = 0
+    local dimensionsNumber = tonumber(document:getElementById("dimensionsInput").value)
+    print("dimesnionNumber: " .. dimensionsNumber)
 
     local isValidMatrix = validateMatrixForm(matrixElements)
 
@@ -89,17 +89,26 @@ function (event)
         return
     end
 
-    
+    local row = {}
     for i = 0, #matrixElements - 1, 1 do
-        if i % 3 == 0 then
-            rowIndex = rowIndex + 1
+        if i % dimensionsNumber == 0 then
+            
+            if (i ~= 0) then
+                table.insert(matrix, row)
+                row = {}
+                print("inserting row...")
+            end
         end
+        table.insert(row, tonumber(matrixElements[i].value))
+        print("inserting element: " .. matrixElements[i].value)
         --print(matrixElements[i].value)
         --print("RowIndex: " .. rowIndex)
-        table.insert(matrix[rowIndex], tonumber(matrixElements[i].value))
+        --table.insert(matrix[rowIndex], tonumber(matrixElements[i].value))
     end
+    --inserting last row...
+    table.insert(matrix, row)
 
-    local finalDet = detFinder.calculateDet3X3(matrix)
+    local finalDet = detFinder.calculateDet(matrix, dimensionsNumber)
     
     local detOutputElement = createVisualOutput(finalDet)
 

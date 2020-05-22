@@ -3,7 +3,7 @@
 Module for finding a determinant. Currently only wotks when given a 3x3 matrix.
 --]]
 
-
+local inspect = require "inspect"
 --The table that acts as module to return at end of file.
 local detFinder = {}
 
@@ -59,21 +59,57 @@ function detFinder.split(matrix, submatrices, columnsCount)
 
 end
 
+--[[
+Should split a matrix with dimension N into N submatrices.
+Where the first row is ommitted since expansion takes plas across there.
+
+]]
+function detFinder.split2(matrix, subMatrices, N, skipColumn)
+    --base case
+    if (skipColumn == 0) then
+        return subMatrices
+    end
+
+    local reverseIndex = N - (skipColumn - 1)
+    local subMatrix = {}
+
+    for i = 2, N, 1 do
+        local row = {}
+        for v = 1, N, 1 do
+            if (v ~= reverseIndex) then
+                table.insert(row, matrix[i][v])
+            end
+        end
+        table.insert(subMatrix, row)
+    end
+
+
+    table.insert(subMatrices, subMatrix)
+
+    return detFinder.split2(matrix, subMatrices, N, skipColumn-1)
+
+end
+
 
 function detFinder.calculateDet3X3(matrix)
 
     local a = matrix[1][1]
     local b = matrix[1][2]
     local c = matrix[1][3]
-    local abc = {matrix[1][1], matrix[1][2], matrix[1][3]}
+    local abc = {}
+
+    for i = 1, 3, 1 do
+        table.insert(abc, matrix[1][i])
+    end
+
     local Det3x3 = 0
 
-    print("a: " .. a .. " b: " .. b .. " c: " .. c)
+    --print("a: " .. a .. " b: " .. b .. " c: " .. c)
 
-    local subMatrices = detFinder.split(matrix, {}, 3)
+    local subMatrices = detFinder.split2(matrix, {}, 3, 3)
     --Need to reverse the submatrixes to have them in the right order for the calculations
-    local subMatrices = detFinder.reverseTable(subMatrices)
-    detFinder.printMatrix(subMatrices)
+    --local subMatrices = detFinder.reverseTable(subMatrices)
+    --detFinder.printMatrix(subMatrices)
 
     local plusMinus = 0
     for key, value in pairs(subMatrices) do
@@ -102,6 +138,60 @@ function detFinder.calculateDet3X3(matrix)
 
 end
 
+
+
+--[[
+The main entry function into calculating the determinant.
+    input - is a square matrix, represented in a Lua table.
+    {{row1}, {row2}, ... , {rowN}}
+]]
+function detFinder.calculateDet(matrix, N)
+
+    if (N == 3) then
+        return detFinder.calculateDet3X3(matrix)
+    end
+
+    --local N = #matrix
+    local firstRow = {}
+    print("Matrix is a: " .. N .. "x" .. N)
+
+    print(printMatrix2(matrix, N))
+
+    for i = 1, N, 1 do
+        table.insert(firstRow, matrix[1][i])
+    end
+
+    print("First row size: " .. inspect(firstRow))
+
+    local ss = detFinder.split2(matrix, {}, N, N)
+
+    print("ss size: " .. #ss)
+
+    print(inspect(ss))
+
+    N = N - 1
+
+    for v = 1, N, 1 do
+        detFinder.calculateDet(ss[v], N)
+    end
+
+end
+
+function printMatrix2(matrix, N)
+    local matrixString = ""
+
+    for i = 1, N, 1 do
+        matrixString = matrixString .. "\n"
+        matrixString = matrixString .. "Row " .. i .. ": "
+        for v = 1, N, 1 do
+            matrixString = matrixString .. matrix[i][v] .. "  "
+        end
+    end
+
+    return matrixString
+
+end
+
 function detFinder.reverseTable(t)
 
     local reversedTable = {}
@@ -126,7 +216,7 @@ returns a number. Which is the determinant of a submatrix.
 --]]
 function detFinder.calculateDet2X2(matrix2x2)
 
-    if (#matrix2x2[1] ~= 2 or #matrix2x2[1] ~= 2 ) then
+    if (#matrix2x2[1] ~= 2 or #matrix2x2[2] ~= 2 ) then
         error("Malformed 2x2 matrix")
     end
 
