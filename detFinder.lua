@@ -148,7 +148,7 @@ The main entry function into calculating the determinant.
 function detFinder.calculateDet(matrix, N)
 
     if (N == 3) then
-        return detFinder.calculateDet3X3(matrix)
+        return -1 --detFinder.calculateDet3X3(matrix)
     end
 
     --local N = #matrix
