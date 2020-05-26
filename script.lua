@@ -108,7 +108,7 @@ function (event)
     --inserting last row...
     table.insert(matrix, row)
 
-    local finalDet = detFinder.calculateDet(matrix, dimensionsNumber)
+    local finalDet = detFinder.calculateDet3(matrix, dimensionsNumber)
     
     local detOutputElement = createVisualOutput(finalDet)
 

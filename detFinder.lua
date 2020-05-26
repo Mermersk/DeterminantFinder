@@ -147,35 +147,210 @@ The main entry function into calculating the determinant.
 ]]
 function detFinder.calculateDet(matrix, N)
 
-    if (N == 3) then
-        return -1 --detFinder.calculateDet3X3(matrix)
+    local finalDetValue = 0
+    local recDepth = 1
+
+    local function innerDet(matrix, N)
+        --print("Recursion depth atm: " .. recDepth)
+        
+        if (N == 2) then
+            print("Entering calc2X2Det with: " .. inspect(matrix))
+            return detFinder.calculateDet2X2(matrix)
+        end
+
+        --print("Matrix is a: " .. N .. "x" .. N)
+
+        --local N = #matrix
+        local firstRow = {}
+        for i = 1, N, 1 do
+            table.insert(firstRow, matrix[1][i])
+        end
+        --print("First row: " .. inspect(firstRow))
+
+
+        local ss = detFinder.split2(matrix, {}, N, N)
+        --print("ss size: " .. #ss)
+        --print(inspect(ss))
+        
+        recDepth = recDepth + 1
+        --N = N - 1
+        print("finalDetValue atm: " .. finalDetValue)
+
+        for v = 1, N, 1 do
+            
+            if (v % 2 == 0) then
+                --print("Minus - Entering with " .. -firstRow[v] .. "*" .. detValue)
+                finalDetValue = finalDetValue - (firstRow[v] * innerDet(ss[v], N-1))
+                --detValue = detValue * (-firstRow[v])
+                --innerDet(ss[v], N-1, detValue, -firstRow[v])
+            else
+                --print("Plus - Entering with " .. firstRow[v] .. "*" .. detValue)
+                finalDetValue = finalDetValue + (firstRow[v] * innerDet(ss[v], N-1))
+                --detValue = detValue * (firstRow[v])
+                --innerDet(ss[v], N-1, detValue, firstRow[v])
+            end
+        end
+        
+        print("Does it ever reach here^^^^")
+        return finalDetValue
     end
 
-    --local N = #matrix
-    local firstRow = {}
-    print("Matrix is a: " .. N .. "x" .. N)
+    finalDetValue = innerDet(matrix, N)
 
-    print(printMatrix2(matrix, N))
-
-    for i = 1, N, 1 do
-        table.insert(firstRow, matrix[1][i])
-    end
-
-    print("First row size: " .. inspect(firstRow))
-
-    local ss = detFinder.split2(matrix, {}, N, N)
-
-    print("ss size: " .. #ss)
-
-    print(inspect(ss))
-
-    N = N - 1
-
-    for v = 1, N, 1 do
-        detFinder.calculateDet(ss[v], N)
-    end
+    return finalDetValue
 
 end
+
+
+function detFinder.calculateDet2(matrix, N)
+
+    local detValue = 0
+    --local recDepth = 0
+    local plusMinus = 1
+    local dString = ""
+
+    local function innerDet(matrix, N, recDepth)
+        
+        local firstRow = {}
+        for i = 1, N, 1 do
+            if (i % 2 == 0) then
+                table.insert(firstRow, -matrix[1][i])
+            else
+                table.insert(firstRow, matrix[1][i])
+            end
+        end
+        
+        --for m = 1, recDepth, 1 do
+            --dString = dString .. "*"
+        --end
+
+        local subMatrices = detFinder.split2(matrix, {}, N, N)
+        print("First row: " .. inspect(firstRow))
+        if (N == 2) then
+            print("Entering calc2X2Det with: " .. inspect(matrix))
+            local det2x2Val = detFinder.calculateDet2X2(matrix)
+            dString = dString .. "Last " .. det2x2Val
+            print(dString)
+            print("finalDetValue: " .. detValue)
+            dString = ""
+            return det2x2Val
+        else
+            for v = 1, #subMatrices, 1 do
+                print(v)
+                --recDepth = recDepth + 1
+                --if (v % 2 == 0) then
+                    print(firstRow[v] .. "* innerDet(...)")
+                    dString = dString .. firstRow[v] .. " -> "
+                    detValue = detValue + (firstRow[v] * innerDet(subMatrices[v], N-1, recDepth + 1))
+                    
+                    --return (firstRow[v] * innerDet(subMatrices[v], N-1))
+                --else
+                    --detValue = detValue + (firstRow[v] * innerDet(subMatrices[v], N-1))
+                    --print(firstRow[v] .. "* innerDet(...)")
+                    --dString = dString .. firstRow[v] .. " | "
+                --end
+            end
+        end
+
+        --print(dString)
+        return detValue
+    end
+
+    local finalDetValue = innerDet(matrix, N, 1)
+
+    return finalDetValue
+
+end
+
+
+function detFinder.calculateDet3(matrix, N)
+
+    
+
+    --Shoulld contain the 2x2 dets, eg associated scalar * det of the 2x2 matrix
+    --local subDets = {}
+
+    local function innerDet(matrix, N, sd, cofactors)
+
+        if (N == 2) then
+            return detFinder.calculateDet2X2(matrix)
+        end
+
+        local firstRow = {}
+        for i = 1, N, 1 do
+            if (i % 2 == 0) then
+                table.insert(firstRow, -matrix[1][i])
+            else
+                table.insert(firstRow, matrix[1][i])
+            end
+        end
+
+        print(inspect(firstRow))
+
+        --detValue = scalar * detValue
+
+        local subMatrices = detFinder.split2(matrix, {}, N, N)
+
+        for i = 1, #subMatrices, 1 do
+            local subMatrix = subMatrices[i]
+            table.insert(cofactors, firstRow[i])
+            local subDet = innerDet(subMatrix, N-1, sd, cofactors)
+            --print(subDet)
+            if (type(subDet) == "number") then
+                table.insert(sd, subDet)
+            end
+            
+        end
+
+
+        return sd, cofactors
+        
+    end
+
+    local det2x2, cofactors = innerDet(matrix, N, {}, {})
+    print(inspect(det2x2))
+    print(inspect(cofactors))
+
+    local detValue = 0
+    --Tells the depth of how many cofactors that should not be 
+    --directly applied to the result of a Det of a 2x2 matrix.
+    local outsideCofactorDepth = N - 3
+    local cofactorSize = #cofactors
+
+    local function cofactorMult(cofactors, det2x2, N, counter, ddd, ds)
+        if (#cofactors == 0 or #det2x2 == 0) then
+            print("empty...")
+            print(ddd)
+            return ddd, ds
+        end
+
+        if (counter <= outsideCofactorDepth) then
+            print("running outside cofactor")
+            local outsideCofactor = table.remove(cofactors, 1)
+            ds = ds .. outsideCofactor .. "*" .. ddd
+            return cofactorMult(cofactors, det2x2, N, counter + 1, outsideCofactor * ddd, ds)
+        end
+
+        print("sdsdsdsdsd")
+        ds = ds .. "("
+        for i = counter, counter+2, 1 do
+            print("cofactors: " .. #cofactors .. " det2x2: " .. #det2x2)
+            local det2x2Value = table.remove(det2x2, 1)
+            local cofactorValue = table.remove(cofactors, 1)
+            ds = ds .. "+ " .. cofactorValue .. "*" .. det2x2Value
+            ddd = ddd + (cofactorValue * det2x2Value)
+        end
+        ds = ds .. ")"
+       
+        return cofactorMult(cofactors, det2x2, N, 1, ddd, ds)
+    end
+
+    local finalDetValue, debugString = cofactorMult(cofactors, det2x2, N, 1, 1, "")
+    print(debugString)
+    print(finalDetValue)
+
+end
+
 
 function printMatrix2(matrix, N)
     local matrixString = ""
@@ -220,14 +395,14 @@ function detFinder.calculateDet2X2(matrix2x2)
         error("Malformed 2x2 matrix")
     end
 
-    ad = matrix2x2[1][1] * matrix2x2[2][2]
-    bc = matrix2x2[1][2] * matrix2x2[2][1]
+    local ad = matrix2x2[1][1] * matrix2x2[2][2]
+    local bc = matrix2x2[1][2] * matrix2x2[2][1]
 
-    det = ad - bc
+    local det = ad - bc
 
     --printMatrix(matrix2x2)
-    print("ad = " .. ad)
-    print("bc = " .. bc)
+    --print("ad = " .. ad)
+    --print("bc = " .. bc)
     print("Det of matrix is: " .. det)
 
     return det
