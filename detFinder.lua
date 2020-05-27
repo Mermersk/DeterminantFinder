@@ -265,7 +265,9 @@ end
 
 function detFinder.calculateDet3(matrix, N)
 
-    
+    if (N == 2) then
+        return detFinder.calculateDet2X2(matrix)
+    end
 
     --Shoulld contain the 2x2 dets, eg associated scalar * det of the 2x2 matrix
     --local subDets = {}
@@ -317,35 +319,49 @@ function detFinder.calculateDet3(matrix, N)
     local outsideCofactorDepth = N - 3
     local cofactorSize = #cofactors
 
-    local function cofactorMult(cofactors, det2x2, N, counter, ddd, ds)
+    local function cofactorMult(cofactors, det2x2, N, counter, ddd, ds, fs, cs, amountSubTables)
+        
+        
+        
         if (#cofactors == 0 or #det2x2 == 0) then
             print("empty...")
-            print(ddd)
-            return ddd, ds
+            print(inspect(fs) .. " --- " .. inspect(cs))
+            print("next amountSubTables: " .. amountSubTables)
+            return cofactorMult(cs, fs, N, 1, 0, "", {}, {}, amountSubTables + 1)
         end
 
-        if (counter <= outsideCofactorDepth) then
+        if ((counter <= outsideCofactorDepth) and (amountSubTables ~= N-1)) then
             print("running outside cofactor")
             local outsideCofactor = table.remove(cofactors, 1)
-            ds = ds .. outsideCofactor .. "*" .. ddd
-            return cofactorMult(cofactors, det2x2, N, counter + 1, outsideCofactor * ddd, ds)
+            table.insert(cs, outsideCofactor)
+            --ds = ds .. outsideCofactor .. "*" .. ddd
+            --ddd = ddd + (outsideCofactor * ddd)
+            return cofactorMult(cofactors, det2x2, N, counter + 1, ddd, ds, fs, cs, amountSubTables)
         end
 
         print("sdsdsdsdsd")
         ds = ds .. "("
-        for i = counter, counter+2, 1 do
-            print("cofactors: " .. #cofactors .. " det2x2: " .. #det2x2)
+        for i = counter, counter+amountSubTables, 1 do
+            print("cofactors: " .. #cofactors .. inspect(cofactors) .. " det2x2: " .. #det2x2 .. inspect(det2x2))
             local det2x2Value = table.remove(det2x2, 1)
             local cofactorValue = table.remove(cofactors, 1)
             ds = ds .. "+ " .. cofactorValue .. "*" .. det2x2Value
             ddd = ddd + (cofactorValue * det2x2Value)
         end
+        table.insert(fs, ddd)
         ds = ds .. ")"
+
+        if (amountSubTables == N-1) then
+            return ddd, ds, fs, cs
+        end
        
-        return cofactorMult(cofactors, det2x2, N, 1, ddd, ds)
+        return cofactorMult(cofactors, det2x2, N, 1, 0, ds, fs, cs, amountSubTables)
     end
 
-    local finalDetValue, debugString = cofactorMult(cofactors, det2x2, N, 1, 1, "")
+    local finalDetValue, debugString, fs, cs = cofactorMult(cofactors, det2x2, N, 1, 0, "", {}, {}, 2)
+    print(inspect(fs))
+    print(inspect(cs))
+    print(inspect(cofactors))
     print(debugString)
     print(finalDetValue)
 
