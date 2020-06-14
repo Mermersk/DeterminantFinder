@@ -309,8 +309,8 @@ function detFinder.calculateDet3(matrix, N)
     end
 
     local det2x2, cofactors = innerDet(matrix, N, {}, {})
-    print(inspect(det2x2) .. "size det2x2: " .. #det2x2)
-    print(inspect(cofactors) .. "size cofactors: " .. #cofactors)
+    --print(inspect(det2x2) .. "size det2x2: " .. #det2x2)
+    --print(inspect(cofactors) .. "size cofactors: " .. #cofactors)
 
     --[[
     --Tells the depth of how many cofactors that should not be 
@@ -415,10 +415,18 @@ function detFinder.calculateDet3(matrix, N)
     --timesToApply is now how many submatrices to apply on each run
     --Highest level is the first row across the original NxN matrix, remove it before entering recursive call
     local function cofactorMult3(mainCounter, cofactors, innerDets, numberOfSkips, timesToApply, N, highestLevel)
+        --print(inspect(cofactors) .. "FIRST size cofactors: " .. #cofactors)
+        --if (iterations ~= -1) then
+            --iterations = iterations + 1
+        --end
+
+        --if (iterations >= 3) then
+            --return cofactorMult3(mainCounter, cofactors, innerDets, 1, timesToApply, N, highestLevel, -1)
+        --end
 
         if (#cofactors == 0) then
             local finalDetValue = 0
-            print("inside base case: " .. inspect(cofactors))
+            print("inside base case - Applying first row of original matrix: " .. inspect(highestLevel))
             for i = 1, #highestLevel, 1 do
                 local innerDetValue = table.remove(innerDets, 1)
                 local cofactorValue = table.remove(highestLevel, 1)
@@ -429,16 +437,12 @@ function detFinder.calculateDet3(matrix, N)
             return finalDetValue
         end
 
-        --if (#innerDets == 1) then
-            --print("Base cased reached. Finished")
-            --return innerDets[1]
-        --end
-
 
         if (numberOfSkips > mainCounter) then
-            print("remove case triggered")
+            print("Switch case triggered")
             print("numberOfSkips: " .. numberOfSkips)
             local removedCofactor = table.remove(cofactors, 1)
+            print("putting this at end of list: " .. inspect(removedCofactor))
             table.insert(cofactors, removedCofactor)
             
             --print(inspect(nextCofactors) .. "size nextCofactors: " .. #nextCofactors)
@@ -478,6 +482,7 @@ function detFinder.calculateDet3(matrix, N)
 
         if (#cofactors == #highestLevel) then
             print("next level case reached")
+            print(inspect(cofactors))
             return cofactorMult3(0, cofactors, innerDets, numberOfSkips - 1, timesToApply + 1, N, highestLevel)
         end
 
