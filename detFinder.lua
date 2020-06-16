@@ -62,7 +62,7 @@ end
 --[[
 Should split a matrix with dimension N into N submatrices.
 Where the first row is ommitted since expansion takes plas across there.
-
+--split2 is the new and improved version of original split function
 ]]
 function detFinder.split2(matrix, subMatrices, N, skipColumn)
     --base case
@@ -90,7 +90,7 @@ function detFinder.split2(matrix, subMatrices, N, skipColumn)
 
 end
 
-
+--[[
 function detFinder.calculateDet3X3(matrix)
 
     local a = matrix[1][1]
@@ -138,13 +138,15 @@ function detFinder.calculateDet3X3(matrix)
 
 end
 
-
+]]
 
 --[[
 The main entry function into calculating the determinant.
     input - is a square matrix, represented in a Lua table.
     {{row1}, {row2}, ... , {rowN}}
 ]]
+
+--[[
 function detFinder.calculateDet(matrix, N)
 
     local finalDetValue = 0
@@ -201,7 +203,9 @@ function detFinder.calculateDet(matrix, N)
 
 end
 
+]]
 
+--[[
 function detFinder.calculateDet2(matrix, N)
 
     local detValue = 0
@@ -262,6 +266,7 @@ function detFinder.calculateDet2(matrix, N)
 
 end
 
+]]
 
 function detFinder.calculateDet3(matrix, N)
 
@@ -287,7 +292,7 @@ function detFinder.calculateDet3(matrix, N)
             end
         end
 
-        print(inspect(firstRow))
+        --print(inspect(firstRow))
         table.insert(cofactors, firstRow)
         --detValue = scalar * detValue
 
@@ -358,6 +363,7 @@ function detFinder.calculateDet3(matrix, N)
 
     ]]
 
+    --[[
     --numberOfRemovals is the number of times to remove a cofactor from the list
     --timesToApply is how long the loop should run to apply cofactors on innerdets.
     -- 3 loops on 2x2, 4 loops on 3x3 and so on....
@@ -411,22 +417,28 @@ function detFinder.calculateDet3(matrix, N)
 
     end
 
+    ]]
+
+    local function analyzeNext5(cofactors, relevantRowSize)
+
+        for i = 1, 5, 1 do
+            local rowInspect = cofactors[i]
+            if (#rowInspect == relevantRowSize) then
+                return false
+            end
+        end
+
+        return true
+    end
 
     --timesToApply is now how many submatrices to apply on each run
     --Highest level is the first row across the original NxN matrix, remove it before entering recursive call
-    local function cofactorMult3(mainCounter, cofactors, innerDets, numberOfSkips, timesToApply, N, highestLevel)
-        --print(inspect(cofactors) .. "FIRST size cofactors: " .. #cofactors)
-        --if (iterations ~= -1) then
-            --iterations = iterations + 1
-        --end
-
-        --if (iterations >= 3) then
-            --return cofactorMult3(mainCounter, cofactors, innerDets, 1, timesToApply, N, highestLevel, -1)
-        --end
-
+    local function cofactorMult3(cofactors, innerDets, timesToApply, relevantRowSize, highestLevel, originalSize)
+       
+        --Final base case
         if (#cofactors == 0) then
             local finalDetValue = 0
-            print("inside base case - Applying first row of original matrix: " .. inspect(highestLevel))
+            --print("inside base case - Applying first row of original matrix: " .. inspect(highestLevel))
             for i = 1, #highestLevel, 1 do
                 local innerDetValue = table.remove(innerDets, 1)
                 local cofactorValue = table.remove(highestLevel, 1)
@@ -437,69 +449,89 @@ function detFinder.calculateDet3(matrix, N)
             return finalDetValue
         end
 
+      
+        --next level case
+        if (analyzeNext5(cofactors, relevantRowSize) == true) then
+            --print("Base case for next level.")
+            return cofactorMult3(cofactors, innerDets, timesToApply + 1, relevantRowSize + 1, highestLevel, #cofactors)
+        end
 
-        if (numberOfSkips > mainCounter) then
-            print("Switch case triggered")
-            print("numberOfSkips: " .. numberOfSkips)
+        --Switch case
+        if (#cofactors[1] ~= relevantRowSize) then
             local removedCofactor = table.remove(cofactors, 1)
-            print("putting this at end of list: " .. inspect(removedCofactor))
+            --print("putting this at end of list: " .. inspect(removedCofactor))
             table.insert(cofactors, removedCofactor)
-            
-            --print(inspect(nextCofactors) .. "size nextCofactors: " .. #nextCofactors)
-            return cofactorMult3(mainCounter + 1, cofactors, innerDets, numberOfSkips, timesToApply, N, highestLevel)
+            return cofactorMult3(cofactors, innerDets, timesToApply, relevantRowSize, highestLevel, originalSize)
 
         end
 
-        print(inspect(innerDets) .. "size det2x2: " .. #innerDets)
-        print(inspect(cofactors) .. "size cofactors: " .. #cofactors)
-        print("timesToApply: " .. timesToApply)
+        --print(inspect(innerDets) .. "size det2x2: " .. #innerDets)
+        --print(inspect(cofactors) .. "size cofactors: " .. #cofactors)
+        --print("timesToApply: " .. timesToApply)
         
         for i = 1, timesToApply, 1 do
             --Intermidieate value, stores one sequence of cofactor * innerDet reuslt
             local tempDet = 0
-            print("decimating: " .. inspect(cofactors[i]))
+            --print("decimating: " .. inspect(cofactors[i]))
             for v = 1, #cofactors[i], 1 do
                 local innerDetValue = table.remove(innerDets, 1)
                 local cofactorValue = cofactors[i][v] --table.remove(cofactors[i], 1)
-                print("********---  " .. cofactorValue .. "*" .. innerDetValue .. "  ---*********" )
+                --print("********---  " .. cofactorValue .. "*" .. innerDetValue .. "  ---*********" )
                 tempDet = tempDet + (cofactorValue * innerDetValue)
 
             end
-            
-            
+             
             table.insert(innerDets, tempDet)
             
         end
 
-        print(inspect(cofactors) .. "size cofactors: " .. #cofactors)
-        print("timesToApply: " .. timesToApply)
+        --print(inspect(cofactors) .. "size cofactors: " .. #cofactors)
+        --print("timesToApply: " .. timesToApply)
 
         for r = 1, timesToApply, 1 do
-            print("removing: " .. inspect(cofactors[1]))
+            --print("removing: " .. inspect(cofactors[1]))
             table.remove(cofactors, 1)
             
         end
 
-        if (#cofactors == #highestLevel) then
-            print("next level case reached")
-            print(inspect(cofactors))
-            return cofactorMult3(0, cofactors, innerDets, numberOfSkips - 1, timesToApply + 1, N, highestLevel)
-        end
-
-        return cofactorMult3(0, cofactors, innerDets, numberOfSkips, timesToApply, N, highestLevel)
+        return cofactorMult3(cofactors, innerDets, timesToApply, relevantRowSize, highestLevel, originalSize)
 
     end
 
 
     --detValue = cofactorMult2(1, cofactors, {}, det2x2, N, N - math.ceil(N/2), 4)
     local highestLevel = table.remove(cofactors, 1)
+    
     --skips: 2x2, 3x3, 4x4 should then be zero. 5x5 should be 1, 6x6 should be 2....
-    local skips = 0
-    if (N > 4) then
-        skips = N - 4
-    end
+    --local skips = 0
+    --if (N > 4) then
+        --skips = N - 4
+    --end
 
-    detValue = cofactorMult3(0, cofactors, det2x2, skips, 4, N, highestLevel)
+    --Should for each "level up" determine a sequence appropiate skips.
+    --local function analyzeSkips(matrix, smallestCofactorRow)
+        --local skips = {}
+
+        --for i = 1, #matrix, 1 do
+            --local cofactorRow = matrix[i]
+            --local cofactorRowSize = #cofactorRow
+
+            --if (cofactorRowSize ~= smallestCofactorRow) then
+                --table.insert(skips, true)
+            --else
+                --table.insert(skips, false)
+            --end
+        --end
+
+        --return skips
+
+    --end
+
+    print("------------" .. inspect(cofactors))
+    --local ss = analyzeSkips(cofactors, 3)
+    --print(inspect(ss))
+
+    local detValue = cofactorMult3(cofactors, det2x2, 4, 3, highestLevel, #cofactors)
 
     --N - math.ceil(N/2)
 
@@ -566,7 +598,7 @@ function detFinder.calculateDet2X2(matrix2x2)
     --printMatrix(matrix2x2)
     --print("ad = " .. ad)
     --print("bc = " .. bc)
-    print("Det of matrix is: " .. det)
+    --print("Det of matrix is: " .. det)
 
     return det
 
