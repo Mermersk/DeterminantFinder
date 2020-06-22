@@ -53,10 +53,10 @@ footer {
     position: fixed;
     width: 100%;
     bottom: 0;
-    color: cornsilk;
+    color: rgb(43, 54, 88);
     text-align: center;
     font-size: large;
-    background-color: rgba(223, 209, 17, 0.658);
+    background-color: rgb(255, 196, 0);
     
 }
 
