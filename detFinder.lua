@@ -1,6 +1,6 @@
 
 --[[    
-Module for finding a determinant. Currently only works when given a 2x2, 3x3, 4x4 matrix.
+Module for finding a determinant.
 --]]
 
 local inspect = require "inspect"
@@ -33,6 +33,8 @@ end
 Splits a 3x3 matrix into 3 2x2 matrices(according to rules of cofactor expansion). It "skips" one column at the time.
 Using tail-call recursion here, and when base case is reached simply return the 3 matrices table that is "submatrices". 
 --]]
+
+--[[
 function detFinder.split(matrix, submatrices, columnsCount)
 
     --printMatrix(matrix)
@@ -58,6 +60,8 @@ function detFinder.split(matrix, submatrices, columnsCount)
     return detFinder.split(matrix, submatrices, columnsCount-1)
 
 end
+
+]]
 
 --[[
 Should split a matrix with dimension N into N submatrices.
